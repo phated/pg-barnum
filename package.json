@@ -1,0 +1,28 @@
+{
+  "name": "pg-barnum",
+  "version": "0.0.0",
+  "description": "There's a sucker born every minute",
+  "author": "Blaine Bublitz <blaine@iceddev.com> (http://iceddev.com)",
+  "contributors": [],
+  "repository": "phated/pg-barnum",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "main": "index.js",
+  "files": [
+    "LICENSE",
+    "index.js"
+  ],
+  "scripts": {
+    "test": "lab -cvL"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "factories",
+    "fixtures",
+    "pg",
+    "postgres"
+  ]
+}
