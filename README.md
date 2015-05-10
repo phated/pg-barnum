@@ -8,20 +8,22 @@ Loosely based on Waterline
 ```js
 {
   attributes: {
-    username: 'string',
-    
-    password: {
-      type: 'string',
-      min: 8
-    }
+    // plain values are used
+    name: 'Firstname Lastname',
+    // functions get executed
+    username: function(){
+      return this.name.split(' ').join('.');
+    },
+    // templates get interpolated
+    password: '<%= username + "Password" %>'
   },
-  
+
   before: function(client, data, cb){
     // allow callback or returning promise
   },
-  
+
   after: function(client, record, cb){
-    // allow callback or returning promise  
+    // allow callback or returning promise
   }
 }
 ```
