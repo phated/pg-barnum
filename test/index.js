@@ -22,6 +22,13 @@ experiment('populate', () => {
 
 experiment('schema', () => {
 
+  test('leaves normal values alone', (done) => {
+    const { id } = schema(factories.user);
+    expect(id).to.be.a.number();
+    expect(id).to.equal(1);
+    done();
+  });
+
   test('resolve properties that are functions', (done) => {
     const { username } = schema(factories.user);
     expect(username).to.be.a.string();

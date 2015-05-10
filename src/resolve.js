@@ -7,7 +7,13 @@ function resolveFunctions(attributes){
 }
 
 function resolveTemplates(attributes){
-  return _.mapValues(attributes, (attr, key, ctx) => _.template(attr)(ctx));
+  return _.mapValues(attributes, (attr, key, ctx) => {
+    if(_.isString(attr)){
+      return _.template(attr)(ctx);
+    }
+
+    return attr;
+  });
 }
 
 const resolve = _.flow(resolveFunctions, resolveTemplates);
