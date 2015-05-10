@@ -15,10 +15,15 @@
     "index.js"
   ],
   "scripts": {
-    "test": "lab -cvL"
+    "test": "lab -cvL -T ./node_modules/lab-babel"
   },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-core": "^5.2.17",
+    "code": "^1.4.0",
+    "lab": "^5.8.0",
+    "lab-babel": "phated/lab-babel"
+  },
   "keywords": [
     "factories",
     "fixtures",
