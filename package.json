@@ -15,12 +15,15 @@
     "index.js"
   ],
   "scripts": {
-    "test": "lab -cvL -T ./node_modules/lab-babel"
+    "test": "lab -cvLS -T ./node_modules/lab-babel"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^3.8.0"
+  },
   "devDependencies": {
     "babel-core": "^5.2.17",
     "code": "^1.4.0",
+    "faker": "^2.1.2",
     "lab": "^5.8.0",
     "lab-babel": "phated/lab-babel"
   },
