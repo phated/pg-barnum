@@ -25,7 +25,7 @@
     "code": "^1.4.0",
     "faker": "^2.1.2",
     "lab": "^5.8.0",
-    "lab-babel": "phated/lab-babel"
+    "lab-babel": "^1.0.1"
   },
   "keywords": [
     "factories",
