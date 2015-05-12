@@ -4,9 +4,18 @@ const { internet } = require('faker');
 
 const User = {
   attributes: {
+    password: {
+      deps: ['username'],
+      value: function() {
+        return this.username + 'Password';
+      }
+    },
     id: 1,
     username: internet.userName,
-    password: '<%= username + "Password" %>'
+    paramertizerizedUsername: {
+      deps: ['username'],
+      value: '<%= username + "-paramertizerid" %>'
+    }
   }
 };
 

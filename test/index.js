@@ -41,4 +41,11 @@ experiment('schema', () => {
     expect(password).to.contain('Password');
     done();
   });
+
+  test('resolves properties that are templates that depend on other attr', (done) => {
+    const { username, password, paramertizerizedUsername } = schema(factories.user);
+    expect(password).to.contain(username);
+    expect(paramertizerizedUsername).to.contain(username + '-paramertizerid');
+    done();
+  });
 });
