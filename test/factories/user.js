@@ -4,6 +4,10 @@ const { internet, name } = require('faker');
 
 const User = {
   attributes: {
+    combined: {
+      after: ['id', 'password', 'fullName'],
+      default: '<%= id + password + fullName %>'
+    },
     id: 1,
     password: {
       after: 'username',
