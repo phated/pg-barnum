@@ -5,22 +5,19 @@ const Topo = require('topo');
 
 function normalizeNodes(attributes){
   return _.map(attributes, function(attr, key){
-    let node;
     if(!_.isPlainObject(attr)){
-      node = {
+      return {
         key: key,
         group: key
       };
     } else {
-      node = {
+      return {
         key: key,
         group: attr.group || key,
         before: attr.before,
         after: attr.after
       };
     }
-
-    return node;
   });
 }
 

@@ -12,11 +12,11 @@ const User = {
     username: internet.userName,
     firstName: {
       group: 'name',
-      default: name.firstName()
+      default: name.firstName
     },
     lastName: {
       group: 'name',
-      default: name.lastName()
+      default: name.lastName
     },
     fullName: {
       after: 'name',

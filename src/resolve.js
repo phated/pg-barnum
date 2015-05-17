@@ -2,9 +2,8 @@
 
 const _ = require('lodash');
 
-function normalizeNode(attribute, key, ctx){
+function normalizeNode(attribute, ctx){
   const base = {
-    key: key,
     ctx: ctx
   };
 
@@ -15,15 +14,14 @@ function normalizeNode(attribute, key, ctx){
   }
 }
 
-function resolveFunctions({ value, ctx, key }){
+function resolveFunctions({ value, ctx }){
   return {
     ctx: ctx,
-    key: key,
     value: _.isFunction(value) ? value.call(ctx) : value
   };
 }
 
-function resolveTemplates({ ctx, value }){
+function resolveTemplates({ value, ctx }){
   if(_.isString(value)){
     return _.template(value)(ctx);
   }
@@ -31,6 +29,12 @@ function resolveTemplates({ ctx, value }){
   return value;
 }
 
-const resolve = _.flow(normalizeNode, resolveFunctions, resolveTemplates);
+const resolvers = _.flow(normalizeNode, resolveFunctions, resolveTemplates);
+
+function resolve(result, propertyKey){
+  const attribute = result[propertyKey];
+  result[propertyKey] = resolvers(attribute, result);
+  return result;
+}
 
 module.exports = resolve;
