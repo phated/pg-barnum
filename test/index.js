@@ -41,4 +41,11 @@ experiment('schema', () => {
     expect(password).to.contain('Password');
     done();
   });
+
+  test('groups based on group property', (done) => {
+    const { firstName, lastName, fullName } = schema(factories.user);
+    expect(fullName).to.contain(firstName);
+    expect(fullName).to.contain(lastName);
+    done();
+  });
 });

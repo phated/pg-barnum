@@ -11,12 +11,18 @@ const User = {
     },
     username: internet.userName,
     firstName: {
-      group: 'first',
+      group: 'name',
       default: name.firstName()
     },
     lastName: {
-      after: 'first',
+      group: 'name',
       default: name.lastName()
+    },
+    fullName: {
+      after: 'name',
+      default: function(){
+        return `${this.firstName} ${this.lastName}`;
+      }
     }
   }
 };
