@@ -10,6 +10,12 @@ const book = {
   }
 };
 
+const bookWithPublisher = {
+  parent: 'book',
+  has_one: ['publisher']
+};
+
 module.exports = {
-  book
+  book,
+  bookWithPublisher
 };

@@ -12,7 +12,7 @@ const author = {
 
 const authorWithBooks = {
   parent: 'author',
-  has_many: ['book', 'book', 'book']
+  has_many: ['book', 'book', 'bookWithPublisher']
 };
 
 
