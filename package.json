@@ -15,17 +15,27 @@
     "index.js"
   ],
   "scripts": {
-    "test": "lab -cvLS -T ./node_modules/lab-babel"
+    "test": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum lab -cvL -S -T ./node_modules/lab-babel",
+    "db": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum mgrt refresh"
   },
   "dependencies": {
-    "lodash": "^3.8.0"
+    "lodash": "^3.8.0",
+    "pg-connection-string": "^0.1.0",
+    "pg-query": "^0.11.0",
+    "pg-sync": "^0.2.0",
+    "pg.js": "^4.1.1",
+    "pluralize": "^1.1.2",
+    "sql-bricks-postgres": "^0.4.1",
+    "topo": "^1.0.2",
+    "when": "^3.7.3"
   },
   "devDependencies": {
     "babel-core": "^5.2.17",
     "code": "^1.4.0",
     "faker": "^2.1.2",
-    "lab": "^5.8.0",
-    "lab-babel": "^1.0.1"
+    "lab": "^5.9.0",
+    "lab-babel": "^1.0.1",
+    "sql-load": "x"
   },
   "keywords": [
     "factories",

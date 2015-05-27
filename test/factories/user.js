@@ -1,13 +1,26 @@
 'use strict';
 
-const { internet } = require('faker');
+const {
+  internet
+} = require('faker');
 
-const User = {
+const user = {
   attributes: {
-    id: 1,
+    age: 32,
     username: internet.userName,
     password: '<%= username + "Password" %>'
   }
 };
 
-module.exports = User;
+const userWithAddress = {
+  parent: 'user',
+  attributes: {
+    hobbies: 'stamps, collectables'
+  },
+  has_one: ['address']
+};
+
+
+module.exports = {
+  user, userWithAddress
+};
