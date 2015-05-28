@@ -22,9 +22,9 @@ const factory = require('../src/factory');
 
 experiment('ringMaster', () => {
 
-  exports.lab.beforeEach(function(done) {
+  exports.lab.afterEach(function(done) {
     ringMaster.acts = [];
-    done();
+    ringMaster.vacume(done);
   });
 
   test('can assign objects as a factory inside acts', (done) => {
@@ -107,7 +107,7 @@ experiment('ringMaster', () => {
   });
 
   //preform
-  test('build an object with it related has_one object', (done) => {
+  test('populate an object with it related has_one object', (done) => {
     ringMaster.assign(userFactories);
     ringMaster.assign({
       address: address
@@ -120,7 +120,7 @@ experiment('ringMaster', () => {
   });
 
   //preform
-  test('build an object with it related has_many object', (done) => {
+  test('populate an object with it related has_many object', (done) => {
     ringMaster.assign(authorFactories);
     ringMaster.assign(book);
     ringMaster.assign(publishers);
