@@ -82,6 +82,8 @@ function recursivePopulate(name, overrides = {}) {
           };
         });
       });
+  }).catch(function onReject(err) {
+    console.log('FAILED\n The preformance was canceled. Shouldn\'t have preformed the scottish one.\n', err);
   });
 }
 
