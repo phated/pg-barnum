@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum lab -cvL -S -T ./node_modules/lab-babel",
-    "db": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum mgrt refresh"
+    "db": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum mgrt up"
   },
   "dependencies": {
     "lodash": "^3.8.0",

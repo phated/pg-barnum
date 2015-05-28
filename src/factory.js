@@ -25,7 +25,7 @@ class Factory {
         let obj = {};
         obj.relationAttribute = {};
         obj.name = name;
-        obj.relationAttribute[foreignKey] = sql(`currval('${tableName}_id_seq')`);
+        obj.relationAttribute[foreignKey] = row['id'];
         obj.attributes = row;
         return obj;
       });

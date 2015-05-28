@@ -3,13 +3,16 @@
 const _ = require('lodash');
 const pluralize = require('pluralize');
 const Factory = require('./factory');
+const truncate = require('./truncate');
 const when = require('when');
 
 const ringMaster = {
   acts: {},
+  active: {},
   assign: assign,
   rehearse: rehearse,
-  preform: preform
+  preform: preform,
+  vacume: vacume
 };
 
 function assign(factories = {}) {
@@ -57,6 +60,8 @@ function recursivePopulate(name, overrides = {}) {
     });
     return act._populate(overrides)
       .then(function(result) {
+        ringMaster.active[act.tableName] = ringMaster.active[act.tableName] || [];
+        ringMaster.active[act.tableName].push(result.attributes.id);
         return dressRehersel(preformance, result);
       })
       .then(function(base) {
@@ -113,6 +118,16 @@ function resolveParent(act) {
 
 function ActError(value) {
   this.message = `The act ${value} has not been included`;
+}
+
+function vacume(done) {
+  return when.all(_.map(_.keys(this.active), function(table) {
+      truncate(table);
+    }))
+    .yield(function(result) {
+      ringMaster.active = {};
+    })
+    .then(done());
 }
 
 module.exports = ringMaster;
