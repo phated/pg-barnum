@@ -31,14 +31,11 @@ function rehearse(name, overrides = {}) {
     throw new ActError(name);
   }
   let act = resolveParent(ringMaster.acts[name]);
-  let rehearsel = act._resolve(overrides);
-  _.each(act.has_one, (relation) => {
-    rehearsel[relation] = ringMaster.rehearse(relation);
-  });
+  let properties = act._resolve(overrides);
   _.each(act.belongs_to, (relation) => {
-    rehearsel[relation] = ringMaster.rehearse(relation);
+    properties[relation] = ringMaster.rehearse(relation);
   });
-  return rehearsel;
+  return properties;
 }
 
 function recursivePopulate(name, overrides = {}) {
@@ -47,15 +44,21 @@ function recursivePopulate(name, overrides = {}) {
   }
   let act = resolveParent(ringMaster.acts[name]);
   let preformance = {};
+  const hasOneDeps = _.reduce(act.attributes, function(result, attr){
+    if(_.has(attr, 'relation')){
+      result.push(recursivePopulate(attr.relation.name, {}));
+    }
+    return result;
+  }, []);
   return when.all(
-    _.map(act.has_one, function(relation) {
-      return recursivePopulate(relation, {});
-    })
+    hasOneDeps
   ).then(function(results) {
     _.map(results, function(result) {
       let relation = {};
       relation[result.relationName] = result.preformance;
       _.assign(act.attributes, result.relationAttribute);
+      // TODO: I don't like deleting here, maybe we can implement a serialize on factory instead
+      delete act.attributes[result.relationName];
       _.assign(preformance, relation);
     });
     return act._populate(overrides)

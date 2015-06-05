@@ -1,8 +1,10 @@
 'use strict';
 
-const {
-  company
-} = require('faker');
+const { company } = require('faker');
+
+const { hasOne } = require('../../src');
+
+const publisher = require('./publisher');
 
 const book = {
   attributes: {
@@ -12,7 +14,9 @@ const book = {
 
 const bookWithPublisher = {
   parent: 'book',
-  has_one: ['publisher']
+  attributes: {
+    publisher: hasOne(publisher)
+  }
 };
 
 module.exports = {

@@ -4,7 +4,6 @@ const _ = require('lodash');
 
 const resolve = require('./resolve');
 const populate = require('./populate');
-const sql = require('sql-bricks-postgres');
 
 class Factory {
   constructor(schema) {
@@ -12,20 +11,25 @@ class Factory {
   }
 
   _resolve(overrides = {}) {
-    return _.merge(resolve(this.attributes), overrides);
+    return _.merge({}, resolve(this.attributes), overrides, function(a, b){
+      if(b && b.relation){
+        return b.relation._resolve();
+      }
+      return b;
+    });
   }
 
   _populate(overrides = {}, cb) {
-    let name = this.name;
-    let foreignKey = this.foreignKey;
-    let tableName = this.tableName;
-    return populate(tableName, _.merge(resolve(this.attributes), overrides), cb)
+    const name = this.name;
+    const foreignKey = this.foreignKey;
+    const tableName = this.tableName;
+    return populate(tableName, this._resolve(overrides), cb)
       .then(function(result) {
-        let row = result[0][0];
-        let obj = {};
+        const row = result[0][0];
+        const obj = {};
         obj.relationAttribute = {};
         obj.name = name;
-        obj.relationAttribute[foreignKey] = row['id'];
+        obj.relationAttribute[foreignKey] = row.id;
         obj.attributes = row;
         return obj;
       });

@@ -14,4 +14,10 @@ function populate({ schemas, connection }, cb){
   cb(null, 1);
 }
 
-module.exports = { populate, schema };
+function hasOne(opts, foreignKey){
+  return {
+    relation: schema(opts)
+  };
+}
+
+module.exports = { populate, schema, hasOne };

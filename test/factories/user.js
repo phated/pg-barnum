@@ -1,8 +1,10 @@
 'use strict';
 
-const {
-  internet
-} = require('faker');
+const { internet } = require('faker');
+
+const { hasOne } = require('../../src');
+
+const address = require('./address');
 
 const user = {
   attributes: {
@@ -15,11 +17,10 @@ const user = {
 const userWithAddress = {
   parent: 'user',
   attributes: {
-    hobbies: 'stamps, collectables'
-  },
-  has_one: ['address']
+    hobbies: 'stamps, collectables',
+    address: hasOne(address)
+  }
 };
-
 
 module.exports = {
   user, userWithAddress
