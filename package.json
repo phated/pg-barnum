@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum lab -cvL -S -T ./node_modules/lab-babel",
-    "db": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum mgrt up"
+    "db": "DATABASE_URL=postgres://postgres@localhost:5432/pg_barnum mgrt up -p ./test/migrations"
   },
   "dependencies": {
     "lodash": "^3.8.0",
@@ -35,6 +35,7 @@
     "faker": "^2.1.2",
     "lab": "^5.9.0",
     "lab-babel": "^1.0.1",
+    "mgrt": "^0.2.8",
     "sql-load": "x"
   },
   "keywords": [
