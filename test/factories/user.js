@@ -16,9 +16,9 @@ const user = {
 
 const userWithAddress = {
   parent: 'user',
+  hasOne: ['address'],
   attributes: {
-    hobbies: 'stamps, collectables',
-    address: hasOne(address)
+    hobbies: 'stamps, collectables'
   }
 };
 

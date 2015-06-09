@@ -36,7 +36,8 @@
     "lab": "^5.9.0",
     "lab-babel": "^1.0.1",
     "mgrt": "^0.2.8",
-    "sql-load": "x"
+    "sql-load": "x",
+    "require-directory": "x"
   },
   "keywords": [
     "factories",

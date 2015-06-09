@@ -2,7 +2,7 @@
 
 const { address } = require('faker');
 
-const Address = {
+const addressFactory = {
   name: 'address',
   attributes: {
     city: address.city,
@@ -10,4 +10,4 @@ const Address = {
   }
 };
 
-module.exports = Address;
+module.exports = {addressFactory};

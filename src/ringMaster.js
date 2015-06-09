@@ -5,23 +5,32 @@ const pluralize = require('pluralize');
 const Factory = require('./factory');
 const truncate = require('./truncate');
 const when = require('when');
+var requireDirectory = require('require-directory');
+
 
 const ringMaster = {
   acts: {},
   active: {},
   assign: assign,
   rehearse: rehearse,
+  slurp: slurp,
   preform: preform,
   vacume: vacume
 };
 
+function slurp(directory) {
+  requireDirectory(module, directory, {
+    visit: assign
+  });
+}
+
 function assign(factories = {}) {
   _.mapValues(factories, (factory, key, ctx) => {
     factory.name = factory.name || key;
-    let name = factory.name;
-    factory.foreignKey = factory.foreignKey || pluralize.singular(_.snakeCase(name) + '_id');
-    factory.tableName = factory.tableName || pluralize.plural(_.snakeCase(name));
-    factory.sequenceId = pluralize.singular(factory.tableName) + '_id';
+    const name = factory.name;
+    const snakeCaseName = _.snakeCase(name);
+    factory.foreignKey = factory.foreignKey || pluralize.singular(snakeCaseName + '_id');
+    factory.tableName = factory.tableName || pluralize.plural(snakeCaseName);
     ringMaster.acts[name] = new Factory(factory);
   });
 }
@@ -31,11 +40,22 @@ function rehearse(name, overrides = {}) {
     throw new ActError(name);
   }
   let act = resolveParent(ringMaster.acts[name]);
-  let properties = act._resolve(overrides);
-  _.each(act.belongs_to, (relation) => {
-    properties[relation] = ringMaster.rehearse(relation);
+  let rehearsel = act._resolve(overrides);
+  _.each(act.hasOne, (actName) => {
+    const baseName = _getBaseNameOfFactory(actName);
+    rehearsel[baseName] = ringMaster.rehearse(actName);
   });
-  return properties;
+  _.each(act.belongsTo, (actName) => {
+    const baseName = _getBaseNameOfFactory(actName);
+
+    rehearsel[baseName] = ringMaster.rehearse(actName);
+  });
+  _.each(act.hasMany, (actName) => {
+    const baseName = _getBaseNameOfFactory(actName);
+    rehearsel[baseName] = [];
+    rehearsel[baseName].push(ringMaster.rehearse(actName));
+  });
+  return rehearsel;
 }
 
 function recursivePopulate(name, overrides = {}) {
@@ -44,21 +64,15 @@ function recursivePopulate(name, overrides = {}) {
   }
   let act = resolveParent(ringMaster.acts[name]);
   let preformance = {};
-  const hasOneDeps = _.reduce(act.attributes, function(result, attr){
-    if(_.has(attr, 'relation')){
-      result.push(recursivePopulate(attr.relation.name, {}));
-    }
-    return result;
-  }, []);
   return when.all(
-    hasOneDeps
+    _.map(act.hasOne, function(relation) {
+      return recursivePopulate(relation, {});
+    })
   ).then(function(results) {
     _.map(results, function(result) {
       let relation = {};
       relation[result.relationName] = result.preformance;
       _.assign(act.attributes, result.relationAttribute);
-      // TODO: I don't like deleting here, maybe we can implement a serialize on factory instead
-      delete act.attributes[result.relationName];
       _.assign(preformance, relation);
     });
     return act._populate(overrides)
@@ -69,7 +83,7 @@ function recursivePopulate(name, overrides = {}) {
       })
       .then(function(base) {
         return when.all(
-          _.map(act.has_many, function(relation) {
+          _.map(act.hasMany, function(relation) {
             return recursivePopulate(relation, base.relationAttribute);
           })
         ).then(function(hasManyresults) {
@@ -90,13 +104,12 @@ function recursivePopulate(name, overrides = {}) {
   });
 }
 
+
 function dressRehersel(preformance, result) {
-  let relationName = result.name;
-  let relationAttribute = result.relationAttribute;
   _.assign(preformance, result.attributes);
   return {
-    relationName,
-    relationAttribute,
+    relationName: result.name,
+    relationAttribute: result.relationAttribute,
     preformance
   };
 
@@ -115,10 +128,19 @@ function resolveParent(act) {
   if (ringMaster.acts[act.parent] === undefined) {
     throw new ActError(act.parent);
   }
-  act = _.merge(act, ringMaster.acts[act.parent]);
+  const parentAct = ringMaster.acts[act.parent];
+  act = _.merge(act, resolveParent(parentAct));
   act.name = act.parent;
   delete act.parent;
   return act;
+}
+
+function _getBaseNameOfFactory(name) {
+  const act = ringMaster.acts[name];
+  if (act.parent === undefined) {
+    return name;
+  }
+  return _getBaseNameOfFactory(act.name);
 }
 
 function ActError(value) {

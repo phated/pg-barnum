@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS publishers;
+DROP TABLE IF EXISTS publishers CASCADE;

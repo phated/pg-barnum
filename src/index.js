@@ -20,4 +20,13 @@ function hasOne(opts, foreignKey){
   };
 }
 
+function hasMany(opts, foreignKey) {
+
+}
+
+function belongsTo(opts, foreignKey) {
+  return {
+    relation: schema(opts)
+  }
+}
 module.exports = { populate, schema, hasOne };

@@ -2,10 +2,6 @@
 
 const { company } = require('faker');
 
-const { hasOne } = require('../../src');
-
-const publisher = require('./publisher');
-
 const book = {
   attributes: {
     title: company.companyName
@@ -14,8 +10,8 @@ const book = {
 
 const bookWithPublisher = {
   parent: 'book',
+  belongsTo: ['publisher'],
   attributes: {
-    publisher: hasOne(publisher)
   }
 };
 
