@@ -13,5 +13,4 @@ function query(queryString, success, errCb) {
   return promise;
 }
 
-
 module.exports = query;

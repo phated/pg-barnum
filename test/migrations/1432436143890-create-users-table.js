@@ -6,7 +6,7 @@ var sqlUp = require('sql-load')('test/migrations/create/users');
 var sqlDown = require('sql-load')('test/migrations/drop/users');
 
 exports.up = function(success, error) {
-  query(sqlUp, success);
+  query(sqlUp, success, error);
 };
 
 exports.down = function(success, error) {

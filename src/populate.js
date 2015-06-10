@@ -7,7 +7,7 @@ query.connectionParameters = require('./connectionParameters');
 
 function populate(tableName, props, cb) {
   return query(
-    sql.insert(tableName, props).returning('*').toString());
+    sql.insert(tableName, props).returning('*').toString(), cb);
 }
 
 module.exports = populate;

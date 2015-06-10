@@ -24,14 +24,26 @@ class Factory {
   }
 
   _resolve(overrides = {}) {
-    return _.merge(resolve(this.attributes), overrides);
+    if (this.beforeBuild) {
+      _.merge(overrides, this.beforeBuild());
+    }
+    let attributes = _.merge(resolve(this.attributes), overrides);
+    if (this.afterBuild) {
+      this.afterBuild(attributes);
+    }
+    return attributes;
   }
 
-  _populate(overrides = {}, cb) {
+  _populate(overrides = {}) {
+    const factory = this;
     const name = this.name;
     const foreignKey = this.foreignKey;
     const tableName = this.tableName;
-    return populate(tableName, this._resolve(overrides), cb)
+    let attributes = this._resolve(overrides);
+    if (this.beforeCreate) {
+      this.beforeCreate(attributes);
+    }
+    return populate(tableName, attributes)
       .then(function(result) {
         const row = result[0][0];
         const obj = {};
@@ -39,6 +51,9 @@ class Factory {
         obj.name = name;
         obj.relationAttribute[foreignKey] = row.id;
         obj.attributes = row;
+        if (factory.afterCreate) {
+          factory.afterCreate(obj.attributes);
+        }
         return obj;
       });
   }

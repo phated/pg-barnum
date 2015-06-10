@@ -14,6 +14,7 @@ const factory = require('../src/factory');
 const path = require('path');
 const factoryPath = path.resolve(__dirname, './factories');
 const factories = requireDirectory(module, factoryPath);
+const query = require('./migrations/query');
 
 experiment('ringMaster', () => {
 
@@ -56,6 +57,22 @@ experiment('ringMaster', () => {
       done();
     });
 
+    test('calls beforeBuild if it has been defined and merges results with attributes.', (done) => {
+      let builtUser = ringMaster.rehearse('userWithBeforeBuild', {
+        password: 'Totally New'
+      });
+      expect(builtUser.password).to.contain('hook password');
+      done();
+    });
+
+    test('calls afterBuild if it has been defined and run function with created attributes.', (done) => {
+      let builtUser = ringMaster.rehearse('userWithAfterBuild', {
+        password: 'Totally New'
+      });
+      expect(builtUser.password).to.contain('Totally New afterBuild');
+      done();
+    });
+
     //parent
     test('can inherient from a parent', (done) => {
       let builtUser = ringMaster.rehearse('userWithAddress');
@@ -89,7 +106,44 @@ experiment('ringMaster', () => {
 
   experiment('populate', () => {
 
-    //preform
+    test('insert the data into the database', (done) => {
+
+      let createdUser = ringMaster.preform('user');
+      createdUser.then(function(result) {
+        return query('SELECT count(*) from users').then(function(count) {
+          expect(count[0][0].count).to.equal('1');
+          return done();
+        });
+      });
+    });
+
+    test('passes the attributes to the beforeCreate function if it exists', (done) => {
+
+      let createdUser = ringMaster.preform('userBeforeCreate');
+      createdUser.then(function(result) {
+        expect(result.password).to.equal(result.username + ' beforeCreate Password');
+        return query('SELECT count(*) from users').then(function(count) {
+          expect(count[0][0].count).to.equal('1');
+          return done();
+        });
+      });
+    });
+
+
+    test('passes the attributes to the afterCreate function if it exists', (done) => {
+
+      let createdUser = ringMaster.preform('userAfterCreate');
+      createdUser.then(function(result) {
+        expect(result.token).to.equal('userAfterCreate token');
+        return query('SELECT count(*) from users').then(function(count) {
+          expect(count[0][0].count).to.equal('1');
+          return done();
+        });
+      });
+    });
+
+
+
     test('populate an object with it related hasOne object', (done) => {
 
       let createdUser = ringMaster.preform('userWithAddress');
@@ -99,10 +153,9 @@ experiment('ringMaster', () => {
       });
     });
 
-    //preform
     test('populate an object with it related hasMany object', (done) => {
-      let createdUser = ringMaster.preform('authorWithBooks');
-      createdUser.then(function(result) {
+      let createdBook = ringMaster.preform('authorWithBooks');
+      createdBook.then(function(result) {
         expect(result.books.length).to.equal(3);
         done();
       });

@@ -25,7 +25,7 @@ function slurp(directory) {
 }
 
 function assign(factories = {}) {
-  _.mapValues(factories, (factory, key, ctx) => {
+  _.mapValues(factories, (factory, key) => {
     factory.name = factory.name || key;
     const name = factory.name;
     const snakeCaseName = _.snakeCase(name);
@@ -100,10 +100,9 @@ function recursivePopulate(name, overrides = {}) {
         });
       });
   }).catch(function onReject(err) {
-    console.log('FAILED\n The preformance was canceled. Shouldn\'t have preformed the scottish one.\n', err);
+    throw new Error(`The preformance was canceled. Should not have preformed the scottish one.\n ${err.stack}`);
   });
 }
-
 
 function dressRehersel(preformance, result) {
   _.assign(preformance, result.attributes);
