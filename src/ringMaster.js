@@ -4,6 +4,8 @@ const _ = require('lodash');
 const pluralize = require('pluralize');
 const Factory = require('./factory');
 const truncate = require('./truncate');
+const Composure = require('./composure');
+
 const when = require('when');
 var requireDirectory = require('require-directory');
 
@@ -64,13 +66,17 @@ function recursivePopulate(name, overrides = {}) {
   }
   let act = resolveParent(ringMaster.acts[name]);
   let comp = new Composure(act);
-  return comp.insertHasOnes(overrides)
+  return comp.insertBelongsTo(addRelations(act.belongsTo, overrides))
     .then(function(result) {
       ringMaster.active[act.tableName] = ringMaster.active[act.tableName] || [];
       ringMaster.active[act.tableName].push(result.attributes.id);
       return comp.composeSelf(result);
-    }).then(function(composedComp) {
-      return composedComp.insertHasManys();
+    })
+    .then(function(composedComp) {
+      return composedComp.insertHasOne(addRelations(act.hasOne, composedComp.relationAttribute));
+    })
+    .then(function(composedComp) {
+      return composedComp.insertHasManys(addRelations(act.hasMany, composedComp.relationAttribute));
     })
     .catch(function onReject(err) {
       throw new Error(`The preformance was canceled. Should not have preformed the scottish one.\n ${err.stack}`);
@@ -120,58 +126,12 @@ function vacume(done) {
     .then(done());
 }
 
-class Composure {
-
-  /**
-
-   */
-
-  constructor(act) {
-    this.preformance = {};
-    this.act = act;
-  }
-
-  insertHasOnes(overrides) {
-    let self = this;
-    return Composure.addRelations(this.act.hasOne)
-      .then(function(hasOneRelations) {
-        _.map(hasOneRelations, function(result) {
-          let relation = {};
-          relation[result.relationName] = result.preformance;
-          _.assign(self.act.attributes, result.relationAttribute);
-          _.assign(self.preformance, relation);
-        });
-        return self.act._populate(overrides);
-      });
-  }
-
-  insertHasManys(overrides) {
-    let self = this;
-    return Composure.addRelations(this.act.hasMany, this.relationAttribute)
-      .then(function(hasManyRelations) {
-        _.map(hasManyRelations, function(hasMany) {
-          let relationName = pluralize.plural(hasMany.relationName);
-          self.preformance[relationName] = self.preformance[relationName] || [];
-          self.preformance[relationName].push(hasMany.preformance);
-        });
-        return self;
-      });
-  }
-
-  composeSelf(results) {
-    _.assign(this.preformance, results.attributes);
-    this.relationName = results.name;
-    this.relationAttribute = results.relationAttribute;
-    return this;
-  }
-}
-
-Composure.addRelations = function(relations, overrides = {}) {
+function addRelations(relations, overrides = {}) {
   return when.all(
     _.map(relations, function(relation) {
       return recursivePopulate(relation, overrides);
     })
   );
-};
+}
 
 module.exports = ringMaster;

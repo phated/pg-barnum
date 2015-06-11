@@ -144,11 +144,11 @@ experiment('ringMaster', () => {
 
 
 
-    test('populate an object with it related hasOne object', (done) => {
+    test('populate an object with it related belongsTo object', (done) => {
 
-      let createdUser = ringMaster.preform('userWithAddress');
+      let createdUser = ringMaster.preform('bookWithPublisher');
       createdUser.then(function(result) {
-        expect(result.address.city).to.be.a.string();
+        expect(result.publisher.name).to.be.a.string();
         done();
       });
     });
