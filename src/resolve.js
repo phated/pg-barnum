@@ -2,20 +2,39 @@
 
 const _ = require('lodash');
 
-function resolveFunctions(attributes){
-  return _.mapValues(attributes, (attr, key, ctx) => _.result(ctx, key));
+function normalizeNode(attribute, ctx){
+  const base = {
+    ctx: ctx
+  };
+
+  if(_.isPlainObject(attribute)){
+    return _.assign({ value: attribute.default }, base);
+  } else {
+    return _.assign({ value: attribute }, base);
+  }
 }
 
-function resolveTemplates(attributes){
-  return _.mapValues(attributes, (attr, key, ctx) => {
-    if(_.isString(attr)){
-      return _.template(attr)(ctx);
-    }
-
-    return attr;
-  });
+function resolveFunctions({ value, ctx }){
+  return {
+    ctx: ctx,
+    value: _.isFunction(value) ? value.call(ctx) : value
+  };
 }
 
-const resolve = _.flow(resolveFunctions, resolveTemplates);
+function resolveTemplates({ value, ctx }){
+  if(_.isString(value)){
+    return _.template(value)(ctx);
+  }
+
+  return value;
+}
+
+const resolvers = _.flow(normalizeNode, resolveFunctions, resolveTemplates);
+
+function resolve(result, propertyKey){
+  const attribute = result[propertyKey];
+  result[propertyKey] = resolvers(attribute, result);
+  return result;
+}
 
 module.exports = resolve;

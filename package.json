@@ -18,7 +18,8 @@
     "test": "lab -cvLS -T ./node_modules/lab-babel"
   },
   "dependencies": {
-    "lodash": "^3.8.0"
+    "lodash": "^3.8.0",
+    "topo": "^1.0.2"
   },
   "devDependencies": {
     "babel-core": "^5.2.17",
